@@ -37,12 +37,6 @@ const errorGenerator = (message, statusCode = 500) => { // error 를 핸들링 �
   throw error; // error 를 핸들링 하는 하는 미들웨어로 에러를 던진다.
 };
 
-const createToken1 = (userId) => {
-    const token = jwt.sign({ _id: userId.toString() }, SECRET_KEY); // 인자로 넘겨받은 user 도큐먼트(객체)의 고유 id로 토큰을 만든다. 두번째 인자값은 salt 값으로 보안과 관련된 값이므로, 보통 dotenv 로 환경변수에 넣어서 사용하게 된다.
-    // console.log(SECRET_KEY)
-    return token;
-  };
-
   const createToken = (userId) => {
     const token = jwt.sign({ _id: userId.toString() }, SECRET_KEY); // 인자로 넘겨받은 user 도큐먼트(객체)의 고유 id로 토큰을 만든다. 두번째 인자값은 salt 값으로 보안과 관련된 값이므로, 보통 dotenv 로 환경변수에 넣어서 사용하게 된다.
     // console.log(SECRET_KEY)
@@ -59,9 +53,9 @@ const signUp = async (req, res, next) => { // signUp 하는 로직
     await createUserData(req.body); // 위에서 정의한 함수로 POST메소드로 들어온 데이터(body)를 보낸다.
     // res.status(201).json({ message: "User created" }); // user가 생성되었다는 메세지를 응답으로 보낸다.
     const user2 = await User.findOne({ email }); // email 로 조회한다.
-    const token1 = createToken1(user2._id); // user 도큐먼트(객체)의 고유한 id로 토큰을 만든다.
-    console.log("token1 : ",token1)
-    res.status(200).json({status:"ok",data:{token:token1}});
+    const token = createToken(user2._id); // user 도큐먼트(객체)의 고유한 id로 토큰을 만든다.
+    console.log("token_signUp : ",token)
+    res.status(200).json({status:"ok",data:{token:token}});
   } catch (err) {
     next(err); // 에러를 catch 해서 에러를 핸들링 하는 미들웨어에서 처리하도록 한다.
   }
@@ -82,7 +76,7 @@ const signUp = async (req, res, next) => { // signUp 하는 로직
       const token = createToken(user._id); // user 도큐먼트(객체)의 고유한 id로 토큰을 만든다.
       // console.log("user id : ",user._id)
     //   res.status(200).json(
-      console.log("token : ",token)
+      console.log("token_signIn : ",token)
       res.status(200).json({status:"ok",data : {token:token}}); // token 을 response로 넘겨준다.
     } catch (err) {
       next(err);
